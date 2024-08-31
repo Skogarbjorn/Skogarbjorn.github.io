@@ -1,34 +1,20 @@
 /////////////////////////////////////////////////////////////////
 //    Sýnidæmi í Tölvugrafík
-//     Teikna nálgun á hring sem TRIANGLE_FAN
+//     Teiknar punkt á strigann þar sem notandinn smellir
+//     með músinni
 //
 //    Hjálmtýr Hafsteinsson, ágúst 2024
 /////////////////////////////////////////////////////////////////
 var canvas;
 var gl;
-var slider;
 
-// numCirclePoints er fjöldi punkta á hringnum
-// Heildarfjöldi punkta er tveimur meiri (miðpunktur + fyrsti punktur kemur tvisvar)
-
-var radius = 0.5;
-var center = vec2(0, 0);
-
+// Þarf hámarksfjölda punkta til að taka frá pláss í grafíkminni
+var maxNumPoints = 200;  
+var index = 0;
 var points = [];
+var numCirclePoints = 22;
 
 window.onload = function init() {
-
-	slider = document.getElementById( "gamer" );
-	slider.oninput = function(event) { 
-		numCirclePoints = Number(event.target.value);
-		createCirclePoints( center, radius, numCirclePoints );
-		gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
-		render();
-	};
-
-	numCirclePoints = Number(slider.value);
-
-	//numCirclePoints = slider.value;
 
     canvas = document.getElementById( "gl-canvas" );
     
@@ -36,7 +22,7 @@ window.onload = function init() {
     if ( !gl ) { alert( "WebGL isn't available" ); }
     
     gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
+    gl.clearColor( 0.95, 1.0, 1.0, 1.0 );
 
     //
     //  Load shaders and initialize attribute buffers
@@ -44,41 +30,53 @@ window.onload = function init() {
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
     
-	// Create the circle
-    createCirclePoints( center, radius, numCirclePoints );
-
+    
     var vBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, 8*maxNumPoints * (numCirclePoints + 2), gl.DYNAMIC_DRAW);
     
     var vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
     
+    canvas.addEventListener("mousedown", function(e){
+
+        gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
+        
+        // Calculate coordinates of new point
+        var t = vec2(2*e.offsetX/canvas.width-1, 2*(canvas.height-e.offsetY)/canvas.height-1);
+
+		createCirclePoints( t, Math.random()/4, numCirclePoints-2 );
+        
+        // Add new point behind the others
+        gl.bufferSubData(gl.ARRAY_BUFFER, 8*index*numCirclePoints, flatten(points));
+
+        index++;
+    } );
+
     render();
 }
 
-
-// Create the points of the circle
 function createCirclePoints( cent, rad, k )
 {
-    points = [];
-    points.push( center );
+	points = [];
+    points.push( cent );
     
     var dAngle = 2*Math.PI/k;
     for( i=k; i>=0; i-- ) {
     	a = i*dAngle;
-    	var p = vec2( rad*Math.cos(a) + cent[0], rad*Math.sin(a) + cent[1] );
+    	var p = vec2( rad*Math.sin(a) + cent[0], rad*Math.cos(a) + cent[1] );
     	points.push(p);
     }
 }
 
+
 function render() {
     
     gl.clear( gl.COLOR_BUFFER_BIT );
-    
-    // Draw circle using Triangle Fan
-    gl.drawArrays( gl.TRIANGLE_FAN, 0, numCirclePoints+2 );
+	for (var i = 0; i <= index; i++) {
+		gl.drawArrays( gl.TRIANGLE_FAN, i * numCirclePoints, numCirclePoints );
+	}
 
     window.requestAnimFrame(render);
 }
