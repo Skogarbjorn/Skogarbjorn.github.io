@@ -40,8 +40,6 @@ window.onload = function init() {
     gl.enableVertexAttribArray(vPosition);
     
     canvas.addEventListener("mousedown", function(e){
-
-        gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer);
         
         // Calculate coordinates of new point
         var t = vec2(2*e.offsetX/canvas.width-1, 2*(canvas.height-e.offsetY)/canvas.height-1);
