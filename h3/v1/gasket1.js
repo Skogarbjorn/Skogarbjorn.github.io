@@ -91,6 +91,7 @@ window.onload = function init()
             panY -= (e.offsetY - origY) * 1/256 * 1/scroll;
             origX = e.offsetX;
             origY = e.offsetY;
+			console.log(panX);
         }
     });
 	canvas.addEventListener("wheel", function(e) {
