@@ -57,14 +57,6 @@ window.onload = function init()
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 
-	var cBuffer = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
-
-	var vColor = gl.getAttribLocation( program, "vColor" );
-	gl.vertexAttribPointer( vColor, 4, gl.FLOAT, false, 0, 0 );
-	gl.enableVertexAttribArray( vColor );
-
     var bufferId = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
@@ -74,7 +66,7 @@ window.onload = function init()
     gl.enableVertexAttribArray( vPosition );
 
     matrixLoc = gl.getUniformLocation( program, "transform" );
-    matrixColor = gl.getUniformLocation( program, "color_change" );
+    matrixColor = gl.getUniformLocation( program, "color_transform" );
 
     canvas.addEventListener("mousedown", function(e) {
         movement = true;

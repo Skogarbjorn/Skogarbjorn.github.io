@@ -5,8 +5,6 @@
 
 <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec4 vPosition;
-attribute vec4 vColor;
-varying vec4 fColor;
 
 uniform mat4 transform;
 
@@ -14,7 +12,6 @@ uniform mat4 transform;
 void
 main()
 {
-	fColor = vColor;
 	gl_PointSize = 1.0;
     gl_Position = transform * vPosition;
 }
@@ -22,13 +19,12 @@ main()
 
 <script id="fragment-shader" type="x-shader/x-fragment">
 precision mediump float;
-varying vec4 fColor;
-uniform vec4 color_change;
+uniform vec4 color_transform;
 
 void
 main()
 {
-    gl_FragColor = fColor * color_change;
+    gl_FragColor = color_transform;
 }
 </script>
 
