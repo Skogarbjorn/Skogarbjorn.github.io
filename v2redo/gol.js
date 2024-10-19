@@ -114,32 +114,14 @@ function countSurrounding(x, y, z) {
 	for (var i = x-1; i <= x+1; i++) {
 		for (var j = y-1; j <= y+1; j++) {
 			for (var k = z-1; k <= z+1; k++) {
-				var a = i;
-				if (i == -1) {
-					a = 9;
-				} if (i == 10) {
-					a = 0;
-				}
-				var b = j;
-				if (j == -1) {
-					b = 9;
-				} if (j == 10) {
-					b = 0;
-				}
-				var c = k;
-				if (k == -1) {
-					c = 9;
-				} if (k == 10) {
-					c = 0;
-				}
+				let a = (i + 10) % 10;
+				let b = (j + 10) % 10;
+				let c = (k + 10) % 10;
 				count += prevCubes[a][b][c];
 			}
 		}
 	}
-	if (count > 0) {
-		return count-prevCubes[x][y][z];
-	}
-	return 0;
+	return count > 0 ? count-prevCubes[x][y][z] : 0;
 }
 
 function colorCube()
@@ -232,8 +214,8 @@ function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	if (tween < 0.9) {
-		tween += 0.1;
+	if (tween < 0.99) {
+		tween += 0.01;
 	}
 
 	var s_in = bounce_curve(tween) * 0.9;

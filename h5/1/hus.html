@@ -1,0 +1,42 @@
+<html><head><script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute  vec4 vPosition;
+
+uniform mat4 projection;
+uniform mat4 modelview;
+
+void main() 
+{
+    gl_Position = projection * modelview * vPosition;
+} 
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+   
+uniform vec4 fColor;
+
+void main()
+{
+    gl_FragColor = fColor;
+}
+</script>
+
+<script type="text/javascript" src="../webgl-utils.js"></script>
+<script type="text/javascript" src="../initShaders.js"></script>
+<script type="text/javascript" src="../MV.js"></script>
+<script type="text/javascript" src="hus.js"></script>
+
+<link href="data:text/css,%3Ais(%5Bid*%3D'google_ads_iframe'%5D%2C%5Bid*%3D'taboola-'%5D%2C.taboolaHeight%2C.taboola-placeholder%2C%23credential_picker_container%2C%23credentials-picker-container%2C%23credential_picker_iframe%2C%5Bid*%3D'google-one-tap-iframe'%5D%2C%23google-one-tap-popup-container%2C.google-one-tap-modal-div%2C%23amp_floatingAdDiv%2C%23ez-content-blocker-container)%20%7Bdisplay%3Anone!important%3Bmin-height%3A0!important%3Bheight%3A0!important%3B%7D" rel="stylesheet" type="text/css"></head><body>
+<h4>Sláið á 1, 2, ..., 8 til að skipta um sjónarhorn.  Núverandi sjónarhorn er fyrir neðan myndina</h4>
+<h4>Örvalyklar hækka og lækka staðsetningu áhorfanda (fer eftir sjónarhorni)</h4>
+<canvas id="gl-canvas" width="700" height="700">
+<div id="Viewpoint">1: Fjarlægt sjónarhorn</div>
+<div id="Height">Viðbótarhæð: -12</div>
+   
+<br>
+
+
+
+</canvas></body></html>
