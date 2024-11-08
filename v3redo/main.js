@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { collision, player_collision } from './collision.js';
-import { laneSpeed, laneWidth, carLanes, waterLanes, car_geometry, player_geometry, initialize_entities } from './initialize.js';
+import { collision, player_collision } from 'v3redo/collision.js';
+import { laneSpeed, laneWidth, carLanes, waterLanes, car_geometry, player_geometry, initPlayer, initialize_entities } from 'v3redo/initialize.js';
+import { map } from 'v3redo/map.js';
 
 
 const scene = new THREE.Scene();
@@ -30,31 +31,53 @@ scene.add( light3 );
 const controls = new OrbitControls( camera, renderer.domElement );
 
 export const player_pos = new THREE.Vector3( 0.0, 0.0, -1.0 );
-let in_water = false;
 
 camera.position.set(-1, 4, -5 );
 controls.update();
 
-const [player, cars, logs, turtles] = initialize_entities(scene);
+let [player, cars, logs, turtles] = initialize_entities(scene);
 let alive = true;
+let winners = 0;
 
 window.onload = function init()
 { 
 
 	window.addEventListener("keydown", function(e) {
-		switch( e.keyCode ) {
-			case 40:
-				player_pos.z -= 1;
-				break;
-			case 38:
-				player_pos.z += 1;
-				break;
-			case 37:
-				player_pos.x += 1;
-				break;
-			case 39:
-				player_pos.x -= 1;
-				break;
+		if (alive) {
+			switch( e.keyCode ) {
+				case 40:
+					if (legal(player_pos.x,
+						player_pos.z - 1))
+						player_pos.z--;
+					break;
+				case 38:
+					if (legal(player_pos.x,
+						player_pos.z + 1)) {
+						if (++player_pos.z > carLanes+waterLanes) {
+							map[Math.round(player_pos.z)+2]
+							[Math.round(player_pos.x)+laneWidth/2] = false;
+							player_pos.z = Math.round(player_pos.z);
+							setTimeout(() => {
+								if (++winners == 4) win();
+								else {
+									player = initPlayer(scene);
+									player_pos.set( 0, 0, -1);
+								}
+							}, 300);
+						}
+					}
+					break;
+				case 37:
+					if (legal(player_pos.x + 1,
+						player_pos.z))
+						player_pos.x++;
+					break;
+				case 39:
+					if (legal(player_pos.x - 1,
+						player_pos.z))
+						player_pos.x--;
+					break;
+			}
 		}
 	});
 
@@ -62,11 +85,19 @@ window.onload = function init()
 	tick();
 }
 
+function win() {
+	console.log("you win");
+}
+
+function legal(x, z) {
+	return map[Math.round(z)+2][Math.round(x)+laneWidth/2];
+}
+
 function smooth() {
 	player.position.x += (player_pos.x - player.position.x)/4;
 	player.position.y += (player_pos.y - player.position.y)/4;
 	player.position.z += (player_pos.z - player.position.z)/4;
-	camera.position.z = player.position.z - 4;
+	if (alive) camera.position.z = player.position.z - 4;
 
 	setTimeout(() => {
 		smooth();
@@ -99,6 +130,9 @@ function tick() {
 			if (Math.abs(turtle.position.x) > laneWidth/2) {
 				turtle.translateX(-turtle.position.x*2);
 			}
+			if (Math.random() < 0.001 && !(turtle.position.y < -0.4)) {
+				sink(turtle);
+			}
 		}
 	}
 	if (player_pos.z > carLanes) {
@@ -117,7 +151,7 @@ function tick() {
 				}
 			}
 		}
-	} else if (0 < player_pos.z && player_pos.z < carLanes) {
+	} else if (0 <= player_pos.z && player_pos.z < carLanes) {
 		for (let i = 0; i < cars[player_pos.z].length; i++) {
 			if (player_collision(cars[player_pos.z][i])) {
 				alive = false;
@@ -128,9 +162,40 @@ function tick() {
         player_pos.x += laneSpeed[Math.round(player_pos.z)];
 	} 
 	setTimeout(() => {
-		if (alive) {
-			tick();
-		}
+		if (!alive) death();
+		else tick();
+	}, 10);
+}
+
+function death() {
+	setTimeout(() => {
+		alive = true;
+		player_pos.set(0, 0, -1);
+		tick();
+	}, 1000);
+	dramaticDeath();
+}
+
+function dramaticDeath() {
+	camera.zoom -= 0.1;
+	setTimeout(() => {
+		if (!alive) dramaticPan();
+		else camera.position.set(-1, 4, -5 );
+	}, 10);
+}
+
+function sink(turtle) {
+	turtle.position.y -= 0.01;
+	setTimeout(() => {
+		if (turtle.position.y < -2) float(turtle);
+		else sink(turtle);
+	}, 10);
+}
+function float(turtle) {
+	turtle.position.y += 0.01;
+	setTimeout(() => {
+		if (turtle.position.y > -0.4) turtle.position.y = -0.4;
+		else float(turtle);
 	}, 10);
 }
 

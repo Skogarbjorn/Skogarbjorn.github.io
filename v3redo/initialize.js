@@ -31,9 +31,9 @@ export const player_geometry = new THREE.BoxGeometry(
 	player_size.z 
 );
 
-function initPlayer(scene) {
+export function initPlayer(scene) {
 	const material = new THREE.MeshPhongMaterial( { color: 0x44aa88 } );
-	const player_cube = new THREE.Mesh( player_geometry, material );
+	const player_cube = new THREE.Mesh( player_geometry.clone(), material );
 	player_cube.translateZ(-1);
 	scene.add( player_cube );
 	return player_cube;

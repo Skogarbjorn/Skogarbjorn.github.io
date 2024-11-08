@@ -16,6 +16,7 @@ export function player_collision(bobj) {
 	const al = player_geometry.parameters.width;
 	const b = bobj.position;
 	const bl = bobj.geometry.parameters.width;
+	if (b.y < -1) return false;
 	if (Math.abs(a.z - b.z) > 1E-6) return false;
 	return a.x + al/2 > b.x - bl/2 &&
 		a.x - al/2 < b.x + bl/2;
