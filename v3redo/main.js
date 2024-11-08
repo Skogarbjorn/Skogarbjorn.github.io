@@ -1,5 +1,5 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'v3redo/three/three';
+import { OrbitControls } from 'v3redo/three/addons/OrbitControls.js';
 import { collision, player_collision } from 'v3redo/collision.js';
 import { laneSpeed, laneWidth, carLanes, waterLanes, car_geometry, player_geometry, initPlayer, initialize_entities } from 'v3redo/initialize.js';
 import { map } from 'v3redo/map.js';

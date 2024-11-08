@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from 'v3redo/three/three';
 import { collision } from './collision.js';
 
 export const laneSpeed = [];
