@@ -1,5 +1,5 @@
-import { player_geometry } from "./initialize.js";
-import { player_pos } from "./main.js";
+//import { player_geometry } from "./initialize.js";
+//import { player_pos } from "./main.js";
 
 export function collision(a, b) {
 	const apos = a.position;

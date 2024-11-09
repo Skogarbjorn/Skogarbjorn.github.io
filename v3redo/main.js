@@ -1,7 +1,7 @@
 //import * as THREE from './three/three.js';
 //import { collision, player_collision } from './collision.js';
-import { laneSpeed, laneWidth, carLanes, waterLanes, car_geometry, player_geometry, initPlayer, initialize_entities } from './initialize.js';
-import { map } from './map.js';
+//import { laneSpeed, laneWidth, carLanes, waterLanes, car_geometry, player_geometry, initPlayer, initialize_entities } from './initialize.js';
+//import { map } from './map.js';
 
 
 const scene = new THREE.Scene();

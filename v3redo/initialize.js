@@ -1,5 +1,5 @@
 //import * as THREE from './three/three.js';
-import { collision } from './collision.js';
+//import { collision } from './collision.js';
 
 export const laneSpeed = [];
 export const carLanes = 5;
