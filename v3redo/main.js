@@ -1,8 +1,8 @@
-import * as THREE from 'v3redo/three/three';
-import { OrbitControls } from 'v3redo/three/addons/OrbitControls.js';
-import { collision, player_collision } from 'v3redo/collision.js';
-import { laneSpeed, laneWidth, carLanes, waterLanes, car_geometry, player_geometry, initPlayer, initialize_entities } from 'v3redo/initialize.js';
-import { map } from 'v3redo/map.js';
+import * as THREE from './three/three.js';
+import { OrbitControls } from './three/addons/OrbitControls.js';
+import { collision, player_collision } from './collision.js';
+import { laneSpeed, laneWidth, carLanes, waterLanes, car_geometry, player_geometry, initPlayer, initialize_entities } from './initialize.js';
+import { map } from './map.js';
 
 
 const scene = new THREE.Scene();
