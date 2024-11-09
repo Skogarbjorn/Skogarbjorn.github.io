@@ -1,7 +1,7 @@
 //import { player_geometry } from "./initialize.js";
 //import { player_pos } from "./main.js";
 
-export function collision(a, b) {
+function collision(a, b) {
 	const apos = a.position;
 	const bpos = b.position;
 	const al = a.geometry.parameters.width;
@@ -11,7 +11,7 @@ export function collision(a, b) {
 		apos.x - al/2 < bpos.x + bl/2;
 }
 
-export function player_collision(bobj) {
+function player_collision(bobj) {
 	const a = player_pos;
 	const al = player_geometry.parameters.width;
 	const b = bobj.position;

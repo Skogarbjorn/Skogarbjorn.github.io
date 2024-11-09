@@ -1,10 +1,10 @@
 //import * as THREE from './three/three.js';
 //import { collision } from './collision.js';
 
-export const laneSpeed = [];
-export const carLanes = 5;
-export const waterLanes = 5;
-export const laneWidth = 16;
+const laneSpeed = [];
+const carLanes = 5;
+const waterLanes = 5;
+const laneWidth = 16;
 
 const numCars = carLanes*2;
 const numLogs = waterLanes;
@@ -20,18 +20,18 @@ const car_size = new THREE.Vector3( 2, 0.9, 0.9 );
 const log_size = new THREE.Vector3( 0.9, 0.9, 0.9 );
 const turtle_size = new THREE.Vector3( 0.9, 0.2, 0.9 );
 const player_size = new THREE.Vector3( 0.8, 0.8, 0.8 );
-export const car_geometry = new THREE.BoxGeometry(
+const car_geometry = new THREE.BoxGeometry(
 	car_size.x, 
 	car_size.y,
 	car_size.z 
 );
-export const player_geometry = new THREE.BoxGeometry(
+const player_geometry = new THREE.BoxGeometry(
 	player_size.x, 
 	player_size.y,
 	player_size.z 
 );
 
-export function initPlayer(scene) {
+function initPlayer(scene) {
 	const material = new THREE.MeshPhongMaterial( { color: 0x44aa88 } );
 	const player_cube = new THREE.Mesh( player_geometry.clone(), material );
 	player_cube.translateZ(-1);
@@ -170,7 +170,7 @@ function initWater(scene) {
 	return [logs, turtles];
 }
 
-export function initialize_entities(scene) {
+function initialize_entities(scene) {
 	for (let i = 0; i < carLanes+waterLanes+1; i++) {
 		laneSpeed[i] = Math.random()/20+0.01;
 		laneSpeed[i] = Math.random() < 0.5 ? -laneSpeed[i] : laneSpeed[i];

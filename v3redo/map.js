@@ -1,4 +1,4 @@
-export let map = [
+let map = [
 	[false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
 	[false, true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  false],
 	[false, true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  false],

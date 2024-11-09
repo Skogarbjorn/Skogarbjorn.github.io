@@ -29,7 +29,7 @@ scene.add( light3 );
 
 const controls = new OrbitControls( camera, renderer.domElement );
 
-export const player_pos = new THREE.Vector3( 0.0, 0.0, -1.0 );
+const player_pos = new THREE.Vector3( 0.0, 0.0, -1.0 );
 
 camera.position.set(-1, 4, -5 );
 controls.update();
