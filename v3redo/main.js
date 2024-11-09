@@ -27,7 +27,7 @@ const light3 = new THREE.DirectionalLight(0xFFFFFF, 3);
 light3.position.set(20, 20, -20);
 scene.add( light3 );
 
-const controls = new OrbitControls( camera, renderer.domElement );
+const controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 const player_pos = new THREE.Vector3( 0.0, 0.0, -1.0 );
 
