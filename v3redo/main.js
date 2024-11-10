@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls1/OrbitControls.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { collision, player_collision } from './collision.js';
 import { laneSpeed, laneWidth, carLanes, waterLanes, car_geometry, player_geometry, initPlayer, initialize_entities, spawnFly } from './initialize.js';
 import { map } from './map.js';
@@ -10,10 +11,12 @@ const camera1 = new THREE.PerspectiveCamera( 80,
 	window.innerWidth/window.innerHeight, 0.1, 1000 );
 const camera2 = new THREE.PerspectiveCamera( 80,
 	window.innerWidth/window.innerHeight, 0.1, 1000 );
+camera2.rotateY(Math.PI);
 
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor( 0xffffff, 0 );
 document.body.appendChild( renderer.domElement );
 
 
@@ -29,10 +32,12 @@ const light3 = new THREE.DirectionalLight(0xFFFFFF, 3);
 light3.position.set(20, 20, -20);
 scene.add( light3 );
 
+const hemilight = new THREE.AmbientLight(0xFFFFFF, 4);
+scene.add(hemilight);
+
 const controls1 = new OrbitControls( camera1, renderer.domElement );
 controls1.enableRotate = false;
-const controls2 = new OrbitControls( camera2, renderer.domElement );
-controls2.enableRotate = false;
+const controls2 = new PointerLockControls( camera2, renderer.domElement );
 
 export const player_pos = new THREE.Vector3( 0.0, 0.0, -1.0 );
 
@@ -42,7 +47,10 @@ controls1.update();
 let view = 1;
 
 let [player, cars, logs, turtles] = initialize_entities(scene);
-let flies = [];
+setTimeout(() => {
+	console.log(player);
+}, 10000);
+const flies = [];
 let alive = true;
 let moving = true;
 let winners = 0;
@@ -74,8 +82,10 @@ window.onload = function init()
 								else {
 									points += 5;
 									moving = true;
+									if (view == 2) player.visible = true;
 									player = initPlayer(scene);
 									player_pos.set( 0, 0, -1);
+									if (view == 2) player.visible = false;
 								}
 							}, 1500);
 						}
@@ -93,16 +103,22 @@ window.onload = function init()
 					break;
 				case 49:
 					view = 1;
+					player.visible = true;
+					controls2.unlock();
 					break;
 				case 50:
 					view = 2;
+					player.visible = false;
+					controls2.lock();
 					break;
 			}
 		}
 	});
 
-	smooth();
-	tick();
+	setTimeout(() => {
+		smooth();
+		tick();
+	}, 1000);
 }
 
 function win() {
@@ -120,7 +136,9 @@ function smooth() {
 	player.position.z += (player_pos.z - player.position.z)/4;
 	if (alive) {
 		camera1.position.z = player.position.z - 4;
-		camera2.position = player.position;
+		camera2.position.set(player.position.x,
+		player.position.y + 0.5,
+		player.position.z);
 	}
 
 	setTimeout(() => {
@@ -193,7 +211,7 @@ function tick() {
 	if (player_pos.z <= carLanes + waterLanes &&player_pos.z > carLanes && alive) {
         player_pos.x += laneSpeed[Math.round(player_pos.z)];
 	} 
-	if (Math.random() < 0.005) flies.push(spawnFly(scene));
+	if (Math.random() < 0.004) flies.push(spawnFly(scene));
 	setTimeout(() => {
 		if (!alive) death();
 		else tick();
@@ -234,13 +252,15 @@ function float(turtle) {
 	}, 10);
 }
 
-function animate() {
-	controls1.target.set(
-		player.position.x, 
-		player.position.y, 
-		player.position.z);
-	controls1.update();
-	if (view == 1) renderer.render( scene, camera1 );
-	if (view == 2) renderer.render( scene, camera2 );
-}
-renderer.setAnimationLoop( animate );
+setTimeout(() => {
+	function animate() {
+		controls1.target.set(
+			player.position.x, 
+			player.position.y, 
+			player.position.z);
+		controls1.update();
+		if (view == 1) renderer.render( scene, camera1 );
+		if (view == 2) renderer.render( scene, camera2 );
+	}
+	renderer.setAnimationLoop( animate );
+}, 2000);

@@ -10,9 +10,9 @@ export const carLanes = 5;
 export const waterLanes = 5;
 export const laneWidth = 16;
 
-const numCars = carLanes*2-5;
-const numLogs = waterLanes+5;
-const numTurtles = waterLanes+5;
+const numCars = carLanes*2;
+const numLogs = waterLanes+3;
+const numTurtles = waterLanes+3;
 
 const carColors = [
 	new THREE.Color( 0x352de9 ),
@@ -50,11 +50,14 @@ function initWalls(scene) {
 }
 
 export function initPlayer(scene) {
-	const material = new THREE.MeshPhongMaterial( { color: 0x44aa88 } );
-	const player_cube = new THREE.Mesh( player_geometry.clone(), material );
-	player_cube.translateZ(-1);
-	scene.add( player_cube );
-	return player_cube;
+	let player;
+	loader.load( './assets/log.glb', function ( gltf ) {
+		player = gltf.scene;
+		player.translateZ(-1);
+		scene.add( player );
+		}, undefined, function ( error ) {
+				console.error( error ); });
+	return player;
 }
 
 function initCars(scene) {
@@ -65,36 +68,40 @@ function initCars(scene) {
 	let lane;
 	let numTries;
 	for (let i = 0; i < numCars; i++) {
-		illegal = true;
+		loader.load( './assets/car.glb', function ( gltf ) {
+			illegal = true;
+			const car = gltf.scene;
 
-		material = new THREE.MeshPhongMaterial();
-		material.color.set(carColors[i % carColors.length]);
+			lane = Math.floor(Math.random()*carLanes);
 
-		lane = Math.floor(Math.random()*carLanes);
-		const car = new THREE.Mesh( car_geometry.clone(), material );
+			numTries = 0;
+			while (illegal) {
+				if (++numTries > 20) { break; }
+				car.position.set(
+					Math.random()*laneWidth-laneWidth/2,
+					0.0,
+					lane
+				);
+				car.traverse((object) => {
+					if (object.name == "Cube") {
+						object.material.color.set(carColors[i%carColors.length])
+					}
+				});
 
-		numTries = 0;
-		while (illegal) {
-		    if (++numTries > 20) { break; }
-			//if (laneSpeed[lane] > 0) car.rotateY(Math.pi/2);
-			car.position.set(
-				Math.random()*laneWidth-laneWidth/2,
-				0.0,
-				lane
-			);
-
-			illegal = false;
-			for (let j = 0; j < cars[lane].length; j++) {
-				if (collision(car, cars[lane][j])) {
-					illegal = true;
-					break;
+				illegal = false;
+				for (let j = 0; j < cars[lane].length; j++) {
+					if (collision(car, cars[lane][j])) {
+						illegal = true;
+						break;
+					}
 				}
 			}
-		}
-		if (numTries <= 20) {
-			cars[lane].push(car);
-			scene.add( car );
-		}
+			if (numTries <= 20) {
+				cars[lane].push(car);
+				scene.add( car );
+			}
+		}, undefined, function ( error ) {
+				console.error( error ); });
 	}
 	return cars;
 }
