@@ -224,7 +224,7 @@ function tick() {
 	if (player_pos.z <= carLanes + waterLanes &&player_pos.z > carLanes && alive) {
         player_pos.x += laneSpeed[Math.round(player_pos.z)];
 	} 
-	if (Math.random() < 0.002) {
+	if (Math.random() < 0.001 && flies.length < 5) {
 		flyLoaded = false;
 		spawnFly(scene).then(fly => {
 			flies.push(fly);
