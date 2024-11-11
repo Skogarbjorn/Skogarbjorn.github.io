@@ -21,8 +21,6 @@ const carColors = [
 ]
 
 const car_size = new THREE.Vector3( 2, 0.9, 0.9 );
-const log_size = new THREE.Vector3( 0.9, 0.9, 0.9 );
-const turtle_size = new THREE.Vector3( 0.9, 0.2, 0.9 );
 const player_size = new THREE.Vector3( 0.8, 0.8, 0.8 );
 export const car_geometry = new THREE.BoxGeometry(
 	car_size.x, 
@@ -50,20 +48,24 @@ function initWalls(scene) {
 }
 
 export function initPlayer(scene) {
-	let player;
-	loader.load( './assets/log.glb', function ( gltf ) {
-		player = gltf.scene;
-		player.translateZ(-1);
-		scene.add( player );
-		}, undefined, function ( error ) {
-				console.error( error ); });
-	return player;
+	return new Promise((resolve, reject) => {
+		loader.load( './assets/frog.glb', function ( gltf ) {
+			const player = gltf.scene;
+			player.rotateY(Math.PI);
+			player.translateZ(-1);
+			player.name = "player";
+			scene.add( player );
+			resolve(player);
+			}, undefined, function ( error ) {
+				console.error( error ); 
+				reject(error);
+			});
+	});
 }
 
 function initCars(scene) {
 	const cars = [];
 	for (let i = 0; i < carLanes; i++) { cars.push([]); }
-    let material;
 	let illegal;
 	let lane;
 	let numTries;
@@ -225,7 +227,6 @@ function initGround(scene) {
 	    side: THREE.DoubleSide,
 		shininess: 300,
 	} );
-	console.log(water_material.reflectivity);
 	const water_geometry = new THREE.PlaneGeometry( laneWidth, waterLanes );
 	const water = new THREE.Mesh( water_geometry, water_material );
 	water.translateY(-0.5);
@@ -235,15 +236,18 @@ function initGround(scene) {
 }
 
 export function spawnFly(scene) {
-    const material = new THREE.MeshPhongMaterial( {
-		color: 0xabcdef,
-	} );
-	const geometry = new THREE.BoxGeometry( 0.5, 0.5, 0.5 );
-	const fly = new THREE.Mesh( geometry, material );
-	fly.position.set( Math.random()*(laneWidth-4)-(laneWidth-2)/2, 0.25,
-		Math.floor(Math.random()*waterLanes+carLanes+1));
-	scene.add( fly );
-	return fly;
+	return new Promise((resolve, reject) => {
+		loader.load( './assets/fly.glb', function ( gltf ) {
+			const fly = gltf.scene;
+			fly.position.set( Math.random()*(laneWidth-4)-(laneWidth-2)/2, 0.25,
+				Math.floor(Math.random()*waterLanes+carLanes+1));
+			scene.add( fly );
+			resolve(fly)
+			}, undefined, function ( error ) {
+				console.error( error ); 
+				reject(error);
+			});
+	});
 }
 
 export function initialize_entities(scene) {
@@ -253,5 +257,5 @@ export function initialize_entities(scene) {
 	}
 	initWalls(scene);
 	initGround(scene);
-	return [initPlayer(scene), initCars(scene)].concat(initWater(scene));
+	return [initCars(scene)].concat(initWater(scene));
 }

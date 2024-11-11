@@ -46,20 +46,20 @@ controls1.update();
 
 let view = 1;
 
-let [player, cars, logs, turtles] = initialize_entities(scene);
-setTimeout(() => {
-	console.log(player);
-}, 10000);
 const flies = [];
 let alive = true;
 let moving = true;
 let winners = 0;
 
+let [cars, logs, turtles] = initialize_entities(scene);
+let player;
+let playerLoaded = true;
+let flyLoaded = true;
+
 let points = 0;
 
 window.onload = function init()
 { 
-
 	window.addEventListener("keydown", function(e) {
 		if (alive && moving) {
 			switch( e.keyCode ) {
@@ -83,7 +83,16 @@ window.onload = function init()
 									points += 5;
 									moving = true;
 									if (view == 2) player.visible = true;
-									player = initPlayer(scene);
+									const temp_pos = player_pos.clone();
+									initPlayer(scene).then(this_player => {
+										this_player.position.set(
+											temp_pos.x,
+											temp_pos.y,
+											temp_pos.z
+										);
+									}).catch(error => {
+										console.log("fuck you")
+									});
 									player_pos.set( 0, 0, -1);
 									if (view == 2) player.visible = false;
 								}
@@ -115,10 +124,14 @@ window.onload = function init()
 		}
 	});
 
-	setTimeout(() => {
+	initPlayer(scene).then(this_player => {
+		player = this_player;
 		smooth();
 		tick();
-	}, 1000);
+		renderer.setAnimationLoop( animate );
+	}).catch(error => {
+		console.log("fuck you")
+	});
 }
 
 function win() {
@@ -142,7 +155,7 @@ function smooth() {
 	}
 
 	setTimeout(() => {
-		smooth();
+		if (playerLoaded) smooth();
 	}, 10);
 }
 
@@ -178,7 +191,7 @@ function tick() {
 		}
 	}
 	for (let i = 0; i < flies.length; i++) {
-		if (player_collision(flies[i])) {
+		if (flyLoaded && player_collision(flies[i])) {
 			points++;
 			console.log("You ate a fly! +1 point");
 			scene.remove(flies[i]);
@@ -211,10 +224,16 @@ function tick() {
 	if (player_pos.z <= carLanes + waterLanes &&player_pos.z > carLanes && alive) {
         player_pos.x += laneSpeed[Math.round(player_pos.z)];
 	} 
-	if (Math.random() < 0.004) flies.push(spawnFly(scene));
+	if (Math.random() < 0.002) {
+		flyLoaded = false;
+		spawnFly(scene).then(fly => {
+			flies.push(fly);
+			flyLoaded = true;
+		});
+	}
 	setTimeout(() => {
 		if (!alive) death();
-		else tick();
+		else if (playerLoaded) tick();
 	}, 10);
 }
 
@@ -226,15 +245,6 @@ function death() {
 		player_pos.set(0, 0, -1);
 		tick();
 	}, 1000);
-	//dramaticDeath();
-}
-
-function dramaticDeath() {
-	camera1.zoom -= 0.1;
-	setTimeout(() => {
-		if (!alive) dramaticDeath();
-		else camera1.position.set(-1, 4, -5 );
-	}, 10);
 }
 
 function sink(turtle) {
@@ -250,17 +260,27 @@ function float(turtle) {
 		if (turtle.position.y > -0.4) turtle.position.y = -0.4;
 		else float(turtle);
 	}, 10);
+
 }
 
-setTimeout(() => {
-	function animate() {
+function createPlayer() {
+	playerLoaded = false;
+	initPlayer(scene).then(this_player => {
+		player = this_player;
+		playerLoaded = true;
+	}).catch(error => {
+		console.log("fuck you")
+	});
+}
+
+function animate() {
+	if (playerLoaded) {
 		controls1.target.set(
 			player.position.x, 
 			player.position.y, 
 			player.position.z);
-		controls1.update();
-		if (view == 1) renderer.render( scene, camera1 );
-		if (view == 2) renderer.render( scene, camera2 );
 	}
-	renderer.setAnimationLoop( animate );
-}, 2000);
+	controls1.update();
+	if (view == 1) renderer.render( scene, camera1 );
+	if (view == 2) renderer.render( scene, camera2 );
+}
