@@ -134,6 +134,7 @@ window.onload = function init()
 
 	// Event listener for keyboard
 	window.addEventListener("keydown", function(e){
+		console.log("pressed key");
 		switch( e.keyCode ) {
 			case 49:	// 1: behind frog
 				view = 1;
@@ -475,13 +476,18 @@ function render()
 			break;
 		case 2:
 			// Frog pov
-			mv = perspective( 90.0, 1.0, 10.0, 100.0 );
-			//mv = lookAt( vec3(playerPos[0], playerPos[1], 5.0), vec3(0.0, playerPos[1]+5.0, 0.0), vec3(0.0, 100.0, 100.0 ) );
 			mv = mult( mv, rotateX(spinY) );
 			mv = mult( mv, rotateZ(spinZ) );
+			mv = mult( mv, translate( -playerPos[0], -playerPos[1], -5.0 ) );
+			mv = mult( mv, perspective( 70.0, 1.0, 0.1, 10.0 ) );
+			//mv = lookAt( vec3(playerPos[0], playerPos[1], 5.0), vec3(0.0, playerPos[1]+5.0, 0.0), vec3(0.0, 100.0, 100.0 ) );
 
+
+			drawGround( mv );
 			drawLogs( mv );
 			drawCars( mv );
+			drawLilies( mv );
+			drawPlayer( mv );
 			//drawPlayer( mv );
 			break;
 	}

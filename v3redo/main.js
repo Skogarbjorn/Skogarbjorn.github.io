@@ -260,7 +260,6 @@ function float(turtle) {
 		if (turtle.position.y > -0.4) turtle.position.y = -0.4;
 		else float(turtle);
 	}, 10);
-
 }
 
 function createPlayer() {
